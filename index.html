@@ -151,7 +151,28 @@ Check your Browserslist config to be sure that your targets are set up correctly
   :root {
     --brand: #4f46e5;      /* indigo-600 */
     --brand-soft: #eef2ff; /* indigo-50  */
+
+    /* ---------- 动效 token：全站唯一来源 ----------
+       时长分四级，数字越大动作越"重"；曲线只保留四条，语义固定。
+       组件里不要再写裸数字，统一取这里的变量，改一处即全站生效。 */
+    --dur-1: 120ms;   /* 一次性微反馈：按压、开关、图标翻转 */
+    --dur-2: 200ms;   /* 悬停、颜色、描边、进度条 */
+    --dur-3: 300ms;   /* 面板切换、结果入场、提示条 */
+    --dur-4: 380ms;   /* 弹窗、浮层这类"大动作" */
+
+    --ease-out: cubic-bezier(.22, 1, .36, 1);        /* 进入：起步快、收尾慢 */
+    --ease-in-out: cubic-bezier(.4, 0, .2, 1);       /* 双向：位移、尺寸 */
+    --ease-exit: cubic-bezier(.4, 0, .75, .4);       /* 退出：略微加速离开 */
+    --ease-spring: cubic-bezier(.34, 1.36, .64, 1);  /* 轻微回弹：开关、按压回弹 */
+
+    /* 入场位移距离：小屏收窄，避免"飘"得太远 */
+    --rise: 10px;
+    --rise-sm: 5px;
+    --stagger: 45ms;  /* 结果区子块之间的排队间隔 */
   }
+
+
+
 
   html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
@@ -200,15 +221,15 @@ Check your Browserslist config to be sure that your targets are set up correctly
     background-image: linear-gradient(90deg, #4f46e5, #7c3aed);
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform .3s cubic-bezier(.4, 0, .2, 1);
+    transition: transform var(--dur-3) var(--ease-out);
   }
   .tab-btn[aria-selected="true"]::after { transform: scaleX(1); }
   .tab-btn[aria-selected="true"] { color: #0f172a; font-weight: 600; }
   .tab-btn[aria-selected="true"] .tab-dot { opacity: 1; transform: scale(1); }
-  .tab-dot { opacity: 0; transform: scale(.4); transition: all .3s ease; }
+  .tab-dot { opacity: 0; transform: scale(.4); transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring); }
 
   /* ---------- 拖拽上传区：进入拖拽态时的高亮 ---------- */
-  .dropzone { transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease, transform .18s ease; }
+  .dropzone { transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
   .dropzone:hover { border-color: #a5b4fc; background-color: #fbfcff; }
   .dropzone.is-drag {
     border-color: #6366f1;
@@ -217,7 +238,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     transform: scale(.995);
   }
   .dropzone.is-drag .dz-icon { transform: translateY(-3px) scale(1.06); color: #4f46e5; }
-  .dz-icon { transition: transform .25s cubic-bezier(.16,1,.3,1), color .25s ease; }
+  .dz-icon { transition: transform var(--dur-2) var(--ease-spring), color var(--dur-2) var(--ease-out); }
 
   /* ---------- 参考答案拖拽区：拖入文件时的状态 ---------- */
   #dropzone-reference.is-drag .dz-hint { display: flex; }
@@ -228,7 +249,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
 
   /* ---------- 输入框统一聚焦效果（Tailwind 类之外的兜底） ---------- */
   .field {
-    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+    transition: border-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
   }
   .field:focus {
     outline: none;
@@ -256,7 +277,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     transform: translateY(-8px) scale(.97);
     transform-origin: top right;
     pointer-events: none;            /* 关闭时不可点击，同时不遮挡页面 */
-    transition: opacity .2s ease, transform .24s cubic-bezier(.16, 1, .3, 1);
+    transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out);
     will-change: opacity, transform;
   }
   .popover.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
@@ -278,7 +299,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     border: 2px solid #4f46e5;
     box-shadow: 0 1px 4px rgba(15, 23, 42, .18);
     cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
+    transition: transform var(--dur-1) var(--ease-spring), box-shadow var(--dur-2) var(--ease-out);
   }
   input[type="range"].slider::-webkit-slider-thumb:hover {
     transform: scale(1.15);
@@ -292,7 +313,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     width: 38px; height: 22px;
     background: #e2e8f0;
     border-radius: 999px;
-    transition: background-color .22s ease;
+    transition: background-color var(--dur-2) var(--ease-out);
   }
   .switch .thumb {
     position: absolute; left: 3px;
@@ -300,7 +321,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     background: #fff;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(15, 23, 42, .25);
-    transition: transform .22s cubic-bezier(.4, 0, .2, 1);
+    transition: transform var(--dur-2) var(--ease-spring);
   }
   .switch input:checked + .track { background: #4f46e5; }
   .switch input:checked + .track + .thumb,
@@ -308,10 +329,10 @@ Check your Browserslist config to be sure that your targets are set up correctly
   .switch input:focus-visible + .track { box-shadow: 0 0 0 4px rgba(99, 102, 241, .18); }
 
   /* ---------- 按钮按压反馈 ---------- */
-  .btn-press { transition: transform .12s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease; }
-  .btn-press:active { transform: scale(.975); }
+  .btn-press { transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out); }
+  .btn-press:active { transform: scale(.97); }
 
-  /* ---------- 预设按钮的高亮态（aria-pressed="true" 表示当前已选中） ---------- */
+  /* ---------- 预设按钮的"当前模式"高亮（AI 试用为常驻模式，用 aria-pressed 标记） ---------- */
   .preset-btn[aria-pressed="true"] {
     border-color: #818cf8;
     background-image: none;
@@ -324,7 +345,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
   .pv-mask {
     opacity: 0;
     pointer-events: none;
-    transition: opacity .22s ease;
+    transition: opacity var(--dur-3) var(--ease-out);
   }
   .pv-mask.is-open { opacity: 1; pointer-events: auto; }
   .pv-card {
@@ -332,7 +353,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     max-height: min(86vh, 720px);
     opacity: 0;
     transform: translateY(16px) scale(.985);
-    transition: opacity .26s ease, transform .32s cubic-bezier(.16, 1, .3, 1);
+    transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out);
     will-change: opacity, transform;
   }
   .pv-mask.is-open .pv-card { opacity: 1; transform: translateY(0) scale(1); }
@@ -350,13 +371,13 @@ Check your Browserslist config to be sure that your targets are set up correctly
   .loader-mask {
     opacity: 0;
     pointer-events: none;
-    transition: opacity .22s ease;
+    transition: opacity var(--dur-2) var(--ease-out);
   }
   .loader-mask.is-on { opacity: 1; pointer-events: auto; }
   .loader-card {
     opacity: 0;
     transform: translateY(10px) scale(.96);
-    transition: opacity .24s ease, transform .28s cubic-bezier(.16, 1, .3, 1);
+    transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-3) var(--ease-out);
   }
   .loader-mask.is-on .loader-card { opacity: 1; transform: none; }
 
@@ -380,7 +401,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     font-weight: 400;
     line-height: 1;
     color: rgba(134, 134, 139, .6);   /* #86868B @60% */
-    transition: color .18s ease;
+    transition: color var(--dur-2) var(--ease-out);
   }
   .heat-scale.is-live .heat-cap { color: rgba(134, 134, 139, .92); }
 
@@ -402,7 +423,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     font-weight: 600;
     letter-spacing: -.025em;
     color: #1d1d1f;
-    transition: color .2s ease;
+    transition: color var(--dur-2) var(--ease-out);
   }
   .heat-readout-pct {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue',
@@ -426,7 +447,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
       inset 0 1px 1px rgba(255, 255, 255, .42),
       0 1px 2px rgba(15, 23, 42, .07),
       0 6px 14px -8px rgba(15, 23, 42, .30);
-    transition: box-shadow .22s ease;
+    transition: box-shadow var(--dur-2) var(--ease-out);
   }
   @media (min-width: 640px) { .heat-track { width: 236px; height: 14px; } }
   .heat-scale.is-live .heat-track {
@@ -449,7 +470,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     box-shadow: 0 0 0 .5px rgba(15, 23, 42, .10), 0 1px 3px rgba(15, 23, 42, .26);
     opacity: 0;
     transform: scaleY(.6);
-    transition: left .18s cubic-bezier(.16, 1, .3, 1), opacity .18s ease, transform .18s ease;
+    transition: left var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
     pointer-events: none;
   }
   .heat-scale.is-live .heat-probe { opacity: 1; transform: none; }
@@ -506,7 +527,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     z-index: 80;
     opacity: 0;
     transform: translateY(3px) scale(.985);
-    transition: opacity .11s ease, transform .13s ease;
+    transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
     pointer-events: none;
     will-change: left, top, opacity;
   }
@@ -547,6 +568,109 @@ Check your Browserslist config to be sure that your targets are set up correctly
   .pair-tip-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; }
   .pair-tip-threshold { position: absolute; top: 0; bottom: 0; width: 1px; background: #94a3b8; }
   .pair-tip-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; font-size: 9px; color: #94a3b8; }
+
+  /* ==========================================================
+     动效系统：全站只有这几条进场通道
+     ----------------------------------------------------------
+     1. 只动 transform / opacity，不拿 box-shadow、filter 做逐帧动画
+     2. 时长与曲线全部取自 :root 的 token，组件不再写裸值
+     3. 退出比进入快——离场不该让人等
+     4. 低性能设备与 prefers-reduced-motion 只"降"不"删"，
+        保留状态可辨识，只是更短、更小、更少
+     ========================================================== */
+
+  /* 收尾统一回到 transform: none —— 停在 translate3d(0,0,0) 会让元素
+     长期占一层合成层，还会变成 fixed 子元素的新定位基准。 */
+  @keyframes mv-rise {
+    from { opacity: 0; transform: translate3d(0, var(--rise), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes mv-rise-sm {
+    from { opacity: 0; transform: translate3d(0, var(--rise-sm), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---- 面板切换：Tab 换页 ---- */
+  .anim-panel { animation: mv-rise-sm var(--dur-3) var(--ease-out) both; }
+
+  /* ---- 结果区子块排队入场：--i 由脚本写入，最多排到第 8 块 ---- */
+  .stagger-in > * {
+    animation: mv-rise var(--dur-3) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * var(--stagger));
+  }
+
+  /* ---- 卡片：悬停只走阴影 + 1px 抬升 ---- */
+  .card-hover {
+    transition: box-shadow var(--dur-2) var(--ease-out),
+                transform var(--dur-2) var(--ease-out),
+                border-color var(--dur-2) var(--ease-out);
+  }
+  .card-hover:hover { transform: translate3d(0, -1px, 0); }
+  @media (hover: none) { .card-hover:hover { transform: none; } }
+
+  /* ---- 分数条：只让 width 走过渡，不做 transition-all ---- */
+  .bar-grow { transition: width var(--dur-4) var(--ease-out); }
+
+  /* ---- 作业标签退场：先收缩淡出，再由脚本提交删除 ---- */
+  @keyframes chip-out {
+    to { opacity: 0; transform: scale(.94); }
+  }
+  .is-leaving {
+    animation: chip-out 160ms var(--ease-exit) forwards;
+    pointer-events: none;
+  }
+
+  /* ---- 大模态：遮罩淡入 + 卡片上浮，关闭时更快收回 ---- */
+  .modal-host { will-change: opacity; }
+  .modal-mask { opacity: 0; transition: opacity var(--dur-4) var(--ease-out); }
+  .modal-card {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(.98);
+    transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .modal-host.is-open .modal-mask { opacity: 1; }
+  .modal-host.is-open .modal-card { opacity: 1; transform: none; }
+  .modal-host.is-closing .modal-mask { opacity: 0; transition-duration: var(--dur-2); }
+  .modal-host.is-closing .modal-card {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(.99);
+    transition-duration: var(--dur-2);
+  }
+
+  /* ---- 轻提示：自上 10px 落入，离场反向收回 ---- */
+  .toast {
+    opacity: 0;
+    transform: translate3d(-50%, -10px, 0);
+    transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .toast.is-in { opacity: 1; transform: translate3d(-50%, 0, 0); }
+  .toast.is-out {
+    opacity: 0;
+    transform: translate3d(-50%, -8px, 0) scale(.98);
+    transition-duration: var(--dur-2);
+  }
+
+  /* ---- 降级一：小屏收窄位移、略缩时长（移动 GPU 填充率低） ---- */
+  @media (max-width: 640px) {
+    :root { --rise: 8px; --rise-sm: 4px; --stagger: 32ms; --dur-3: 260ms; --dur-4: 320ms; }
+  }
+
+  /* ---- 降级二：低性能设备（脚本按 CPU 核数 / 内存判定） ----
+     保留"有变化"这件事，去掉重绘最贵的部分：位移减半、取消逐块延迟、
+     模态磨砂直接关掉（backdrop-filter 在低端机上是主要瓶颈）。 */
+  html[data-motion="lite"] {
+    --rise: 4px; --rise-sm: 2px; --stagger: 0ms;
+    --dur-1: 90ms; --dur-2: 140ms; --dur-3: 180ms; --dur-4: 200ms;
+  }
+  html[data-motion="lite"] .stagger-in > * { animation-delay: 0ms !important; }
+  html[data-motion="lite"] .modal-mask {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  html[data-motion="lite"] .modal-card,
+  html[data-motion="lite"] .toast { will-change: auto; }
 
   /* ---------- 减少动画偏好 ---------- */
   @media (prefers-reduced-motion: reduce) {
@@ -842,7 +966,7 @@ Check your Browserslist config to be sure that your targets are set up correctly
     </div>
 
     <!-- ---------- 卡片 A：算法参数 ---------- -->
-    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition-shadow duration-300 hover:shadow-card-hover">
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-card-hover">
       <h2 class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900">
         <svg class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 20V10M18 20V4M6 20v-4" />
@@ -958,10 +1082,10 @@ Check your Browserslist config to be sure that your targets are set up correctly
     <!-- ========================================================
          Tab 1：作业两两查重
          ======================================================== -->
-    <section id="panel-dedupe" role="tabpanel" aria-labelledby="tab-dedupe" class="space-y-5 animate-fade-up">
+    <section id="panel-dedupe" role="tabpanel" aria-labelledby="tab-dedupe" class="space-y-5">
 
       <!-- 操作卡片 -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition-all duration-300 hover:shadow-card-hover sm:p-6">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-card card-hover hover:shadow-card-hover sm:p-6">
 
         <!-- 卡片头 -->
         <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
@@ -2536,6 +2660,102 @@ window.callAIReview = AIEngine.callAIReview;
 (function () {
   'use strict';
 
+  /* ---------- 6.0 动效调度：全站动画只从这里发令 ----------
+     Enter 负责面板/容器的入场重播，Stagger 负责子块排队，
+     Modal 负责遮罩+卡片的进出。低性能设备只把 token 调小，
+     动画依旧存在——状态变化不会退化成"瞬间闪现"。 */
+  const Motion = (function () {
+    const root = document.documentElement;
+
+    // 低性能设备：核数少或内存小（Safari 无 deviceMemory，按 8 计）
+    const cores = navigator.hardwareConcurrency || 8;
+    const mem = navigator.deviceMemory || 8;
+    const lite = cores <= 4 || mem <= 3;
+    if (lite) root.dataset.motion = 'lite';
+
+    // 系统"减少动态效果"：实时跟随，用户中途改设置也生效
+    const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    function syncReduce() {
+      if (mq) root.dataset.reduced = mq.matches ? '1' : '0';
+    }
+    syncReduce();
+    if (mq && mq.addEventListener) mq.addEventListener('change', syncReduce);
+
+    /**
+     * 重播一次性入场（Tab 换页、容器重新渲染）。
+     * 播完立刻摘类：留着 fill 会让元素常驻合成层，文本从亚像素抗锯齿
+     * 退化成灰度抗锯齿，字号观感会变细。
+     */
+    function enter(el, cls) {
+      if (!el) return;
+      const name = cls || 'anim-panel';
+      el.classList.remove(name);
+      void el.offsetWidth;    // 强制回流，同名动画才能重放
+      el.classList.add(name);
+      function onEnd(e) {
+        if (e.target !== el) return;
+        el.removeEventListener('animationend', onEnd);
+        el.classList.remove(name);
+      }
+      el.addEventListener('animationend', onEnd);
+    }
+
+    /**
+     * 让容器的直接子元素依次入场。
+     * 结束必须把类摘掉：animation 的 fill 会长期盖住子元素自身的
+     * transform，卡片 hover 抬升就再也动不了。
+     */
+    function stagger(el) {
+      if (!el) return;
+      const kids = Array.prototype.slice.call(el.children);
+      if (!kids.length) return;
+      kids.forEach(function (k, i) {
+        k.style.setProperty('--i', String(Math.min(i, 8)));
+      });
+      el.classList.remove('stagger-in');
+      void el.offsetWidth;
+      el.classList.add('stagger-in');
+      const tail = kids[Math.min(kids.length, 9) - 1];
+      if (!tail) return;
+      function onEnd(e) {
+        if (e.target !== tail) return;   // 忽略子元素冒泡上来的动画结束
+        tail.removeEventListener('animationend', onEnd);
+        el.classList.remove('stagger-in');
+      }
+      tail.addEventListener('animationend', onEnd);
+    }
+
+    const CLOSE_MS = lite ? 120 : 220;   // 与 --dur-2 对齐
+
+    /** 打开模态：先摘 hidden，逼出一帧后再上 is-open，过渡才会真正跑 */
+    function openModal(host) {
+      if (!host) return;
+      host.classList.add('modal-host');
+      host.classList.remove('hidden', 'is-closing');
+      void host.offsetWidth;
+      host.classList.add('is-open');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    /** 关闭模态：先播退场再隐藏；onDone 在隐藏之后执行 */
+    function closeModal(host, onDone) {
+      if (!host) return;
+      if (host.classList.contains('hidden')) { if (onDone) onDone(); return; }
+      host.classList.remove('is-open');
+      host.classList.add('is-closing');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(function () {
+        host.classList.add('hidden');
+        host.classList.remove('is-closing');
+        if (onDone) onDone();
+      }, CLOSE_MS);
+    }
+
+    return { lite: lite, enter: enter, stagger: stagger, openModal: openModal, closeModal: closeModal };
+  })();
+
+  window.Motion = Motion;
+
   /* ---------- 6.1 Tab 切换 ---------- */
   const tabs = [
     { btn: document.getElementById('tab-dedupe'), panel: document.getElementById('panel-dedupe') },
@@ -2547,13 +2767,9 @@ window.callAIReview = AIEngine.callAIReview;
       const active = i === index;
       t.btn.setAttribute('aria-selected', active ? 'true' : 'false');
       t.panel.classList.toggle('hidden', !active);
-      // 重新触发入场动画
-      if (active) {
-        t.panel.classList.remove('animate-fade-up');
-        void t.panel.offsetWidth;
-        t.panel.classList.add('animate-fade-up');
-      }
     });
+    // 换页：新面板轻轻上浮，旧面板直接让位（两个面板高度不同，交叉淡入会抖）
+    Motion.enter(tabs[index].panel);
   }
   tabs.forEach(function (t, i) {
     t.btn.addEventListener('click', function () { activateTab(i); });
@@ -2669,15 +2885,14 @@ window.callAIReview = AIEngine.callAIReview;
   function toast(message, tone) {
     const palette = { ok: 'bg-emerald-600', error: 'bg-rose-600', info: 'bg-slate-900' };
     const el = document.createElement('div');
-    el.className = 'pointer-events-none fixed left-1/2 top-20 z-[80] max-w-[calc(100vw_-_2.5rem)] -translate-x-1/2 -translate-y-2 rounded-lg px-3.5 py-2 text-[11.5px] font-medium text-white opacity-0 shadow-lg transition-all duration-300 ' + (palette[tone] || palette.info);
+    el.className = 'toast pointer-events-none fixed left-1/2 top-20 z-[80] max-w-[calc(100vw_-_2.5rem)] rounded-lg px-3.5 py-2 text-[11.5px] font-medium text-white shadow-lg ' + (palette[tone] || palette.info);
+    el.setAttribute('role', 'status');
     el.textContent = message;
     document.body.appendChild(el);
-    requestAnimationFrame(function () {
-      el.classList.remove('opacity-0', '-translate-y-2');
-      el.classList.add('opacity-100', 'translate-y-0');
-    });
+    requestAnimationFrame(function () { el.classList.add('is-in'); });
     setTimeout(function () {
-      el.classList.add('opacity-0', '-translate-y-2');
+      el.classList.remove('is-in');
+      el.classList.add('is-out');
       setTimeout(function () { el.remove(); }, 320);
     }, 2400);
   }
@@ -3702,8 +3917,20 @@ window.callAIReview = AIEngine.callAIReview;
   document.addEventListener('click', function (e) {
     const removeBtn = e.target.closest('[data-remove]');
     if (removeBtn) {
-      state.assignments = state.assignments.filter(function (a) { return a.id !== removeBtn.dataset.remove; });
-      renderPool();
+      const id = removeBtn.dataset.remove;
+      const chip = removeBtn.closest('[data-preview]');
+      if (chip && chip.classList.contains('is-leaving')) return;   // 连点不重复触发
+      const commit = function () {
+        state.assignments = state.assignments.filter(function (a) { return a.id !== id; });
+        renderPool();
+      };
+      // 先让这一格收缩淡出再真正删，避免列表"啪"地重排
+      if (chip && window.Motion && !window.Motion.lite) {
+        chip.classList.add('is-leaving');
+        setTimeout(commit, 160);
+      } else {
+        commit();
+      }
       return;
     }
     // 点击 chip 主体 → 预览原文（点右上角 × 不会走到这里）
@@ -4366,8 +4593,7 @@ window.callAIReview = AIEngine.callAIReview;
 
   function hidePairDetail() {
     if (!pairModalEl) return;
-    pairModalEl.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
+    window.Motion.closeModal(pairModalEl);
   }
 
   /**
@@ -4422,8 +4648,8 @@ window.callAIReview = AIEngine.callAIReview;
     };
 
     const html = '' +
-      '<div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" data-pair-close></div>' +
-      '<div role="dialog" aria-modal="true" aria-label="作业对照" class="relative flex max-h-[90vh] w-[min(96vw,1000px)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float animate-fade-up">' +
+      '<div class="modal-mask absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" data-pair-close></div>' +
+      '<div role="dialog" aria-modal="true" aria-label="作业对照" class="modal-card relative flex max-h-[90vh] w-[min(96vw,1000px)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float">' +
         '<div class="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3.5 sm:px-5">' +
           '<div class="min-w-0">' +
             '<p class="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-slate-400">作业对照</p>' +
@@ -4478,8 +4704,7 @@ window.callAIReview = AIEngine.callAIReview;
     }
 
     pairModalEl.innerHTML = html;
-    pairModalEl.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    window.Motion.openModal(pairModalEl);
   }
 
   /* ----------------------------------------------------------
@@ -4490,8 +4715,7 @@ window.callAIReview = AIEngine.callAIReview;
 
   function hideGradeDetail() {
     if (!gradeModalEl) return;
-    gradeModalEl.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
+    window.Motion.closeModal(gradeModalEl);
   }
 
   /** 合并重叠区间后统计字数（同一段不会被重复计入） */
@@ -4559,8 +4783,8 @@ window.callAIReview = AIEngine.callAIReview;
     };
 
     const html = '' +
-      '<div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" data-grade-close></div>' +
-      '<div role="dialog" aria-modal="true" aria-label="与参考答案对照" class="relative flex max-h-[90vh] w-[min(96vw,1040px)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float animate-fade-up">' +
+      '<div class="modal-mask absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" data-grade-close></div>' +
+      '<div role="dialog" aria-modal="true" aria-label="与参考答案对照" class="modal-card relative flex max-h-[90vh] w-[min(96vw,1040px)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float">' +
         '<div class="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3.5 sm:px-5">' +
           '<div class="min-w-0">' +
             '<p class="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-slate-400">批改对照 · 差异高亮</p>' +
@@ -4610,8 +4834,7 @@ window.callAIReview = AIEngine.callAIReview;
     }
 
     gradeModalEl.innerHTML = html;
-    gradeModalEl.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    window.Motion.openModal(gradeModalEl);
   }
 
   function buildPairTable(pairs, threshold) {
@@ -4683,7 +4906,7 @@ window.callAIReview = AIEngine.callAIReview;
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 600, easing: 'easeOutQuart' },
+        animation: (window.Motion && window.Motion.lite) ? false : { duration: 600, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -4781,6 +5004,7 @@ window.callAIReview = AIEngine.callAIReview;
 
     if (empty) empty.classList.add('hidden');
     body.classList.remove('hidden');
+    if (window.Motion) window.Motion.stagger(body);
 
     // 热力块 / 排行行 → 两两对照弹窗（委托绑定一次，后续重新渲染不用重绑）
     if (!body.dataset.pairBound) {
@@ -5000,7 +5224,7 @@ window.callAIReview = AIEngine.callAIReview;
           '<span class="font-mono text-[10.5px] text-indigo-400">' + (laneLabel || ('并发 ' + AI_CONCURRENCY + ' 路')) + '</span>' +
         '</div>' +
         '<div class="h-1.5 w-full overflow-hidden rounded-full bg-indigo-100">' +
-          '<div id="grade-bar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-300" style="width:0%"></div>' +
+          '<div id="grade-bar" class="bar-grow h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" style="width:0%"></div>' +
         '</div>' +
         '<p class="mt-2.5 text-[10.5px] text-slate-400">正在计算相似度基础分并生成教师评语，请稍候…</p>' +
       '</div>';
@@ -5033,7 +5257,7 @@ window.callAIReview = AIEngine.callAIReview;
         '建议人工复核要点完整性。</span>';
 
     return '' +
-      '<article class="group flex flex-col rounded-xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-card-hover">' +
+      '<article class="group flex flex-col rounded-xl border border-slate-200 bg-white p-4 card-hover hover:border-slate-300 hover:shadow-card-hover">' +
         '<div class="flex items-start gap-3">' +
           '<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-[12px] font-semibold text-white shadow-sm">' + initial + '</div>' +
           '<div class="min-w-0 flex-1">' +
@@ -5103,6 +5327,7 @@ window.callAIReview = AIEngine.callAIReview;
     body.classList.remove('hidden');
     const empty = $('#result-grade-empty');
     if (empty) empty.classList.add('hidden');
+    if (window.Motion) window.Motion.stagger(body);
 
     const exportBtn = $('#btn-export-grade');
     if (exportBtn) {
@@ -5160,6 +5385,7 @@ window.callAIReview = AIEngine.callAIReview;
     if (body) {
       body.classList.remove('hidden');
       body.innerHTML = progressShell(list.length);
+      if (window.Motion) window.Motion.enter(body);
     }
     scrollIntoViewSmooth($('#result-grade'));
 
